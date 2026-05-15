@@ -57,19 +57,23 @@ except Exception as e:
 QUEUE = 'archival-alt-text'
 PROCESSING = 'archival-alt-text:processing'
 
-def get_redis():
-    host = os.environ.get('REDIS_HOST', 'redis-service')
-    return redis.Redis(host=host, port=6379, db=0, socket_connect_timeout=10)
+redis_client = redis.Redis(
+    host=os.environ.get('REDIS_HOST', 'redis-service'),
+    port=6379, db=0,
+    socket_connect_timeout=10,
+    socket_timeout=30,
+    )
+
 
 def get_next_task():
     """Returns (parsed_task, raw_bytes) or special string flags."""
     try:
-        r = get_redis()
-        raw = r.brpoplpush(QUEUE, PROCESSING, timeout=60)
+
+        raw = redis_client.brpoplpush(QUEUE, PROCESSING, timeout=60)
         if raw:
             return json.loads(raw.decode('utf-8')), raw
-        main_len = r.llen(QUEUE)
-        proc_len = r.llen(PROCESSING)
+        main_len = redis_client.llen(QUEUE)
+        proc_len = redis_client.llen(PROCESSING)
         logger.info(f"Queue status: main={main_len}, processing={proc_len}")
         if main_len == 0:
             return "QUEUE_EMPTY", None
@@ -80,16 +84,16 @@ def get_next_task():
 
 def complete_task(raw):
     try:
-        r = get_redis()
-        r.lrem(PROCESSING, 1, raw)
+
+        redis_client.lrem(PROCESSING, 1, raw)
     except Exception as e:
         logger.warning(f"Could not complete task: {e}")
 
 def fail_task(raw):
     try:
-        r = get_redis()
-        r.lrem(PROCESSING, 1, raw)
-        r.lpush(QUEUE, raw)
+
+        redis_client.lrem(PROCESSING, 1, raw)
+        redis_client.lpush(QUEUE, raw)
     except Exception as e:
         logger.warning(f"Could not fail task: {e}")
 
@@ -288,8 +292,8 @@ if error_records:
         json.dump(error_records, f, indent=2)
 
 try:
-    r = get_redis()
-    logger.info(f"Final queue: main={r.llen(QUEUE)}, processing={r.llen(PROCESSING)}")
+
+    logger.info(f"Final queue: main={redis_client.llen(QUEUE)}, processing={redis_client.llen(PROCESSING)}")
 except Exception:
     pass
 
