@@ -1,0 +1,6 @@
+Pillow
+requests
+redis
+openai
+pyyaml
+json-repair

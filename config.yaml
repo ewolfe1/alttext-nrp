@@ -1,0 +1,10 @@
+api:
+  host: glm-4v-service
+  port: 8080
+  model: glm-4v
+  timeout: 120
+
+generation:
+  max_tokens: 512      # plenty for a JSON response with alt-text
+  temperature: 0.3     # lower = more consistent/predictable outputs
+  top_p: 0.9
