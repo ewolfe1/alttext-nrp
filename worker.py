@@ -194,6 +194,7 @@ def query_llm(pid, image_url, metadata, item_type, max_retries=5):
                 max_tokens=gen_cfg.get('max_tokens', 512),
                 temperature=gen_cfg.get('temperature', 0.3),
                 top_p=gen_cfg.get('top_p', 0.9),
+                extra_body={"chat_template_kwargs": {"enable_thinking": False}},
             )
             msg = completion.choices[0].message.content
             if not msg:
