@@ -108,7 +108,7 @@ def fetch_and_encode_image(pid, max_retries=5):
     """Fetch from Islandora, resize to stay under model file size limit."""
     url = f'https://digital.lib.ku.edu/islandora/object/{pid}/datastream/OBJ/view'
     MAX_FILE_BYTES = 3355443  # ~3.2MB
-    MAX_PIXEL_DIM = 4000
+    MAX_PIXEL_DIM = 1536 # was 4000, but too large for current approach
 
     for attempt in range(max_retries):
         try:
