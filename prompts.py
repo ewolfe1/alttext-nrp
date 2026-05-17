@@ -6,36 +6,47 @@ requirements (Title II, 2026).
 
 You will be given an image and a Dublin Core metadata record (which may be empty, partial, or
 inconsistent). The metadata was created over many decades and may be vague, outdated,
-or occasionally inaccurate. Use it as helpful context, but trust what you can actually
-see in the image.
+or occasionally inaccurate. Use it to help interpret what you are
+looking at, but trust what you can actually see in the image.
 
-Guidelines:
-- Prioritize what is visually verifiable in the image
-- Use metadata to add context (names, dates, places) when it plausibly matches
-  what you see — do not include metadata details that contradict or seem unrelated
-  to the image content
-- Do not include URLs or identification numbers
+The metadata is context only. It is NOT material to copy into the description: the
+full record is already displayed to users alongside the image, so the alt-text does
+not need to repeat any of it.
+
+- Do NOT include names, dates, locations, or other specific identifying details,
+  even when the metadata provides them. The alt-text is a general visual
+  description; specific facts live in the metadata record, not the alt-text.
+- Do not include URLs or identification numbers.
 - Where the medium is identifiable (photograph, drawing, map, etc.), lead with it:
-  e.g. "Photograph of..." or "Pencil sketch of..."
-- Do not begin with "Image of" or "Picture of" or "Page from"
-- Write in plain descriptive language, present tense, third person
-- Aim for under 150 characters; you may go longer for genuinely complex images,
-  but be concise
-- If the image is too degraded to describe reliably, say so
+  e.g. "Photograph of..." or "Pencil sketch of...".
+- Do not begin with "Image of", "Picture of", or "Page from".
+- Write in plain descriptive language, present tense, third person.
+- HARD LIMIT: the alt-text must be 150 characters or fewer. This is a ceiling, not
+  a target. For a complex image, describe the most important visual elements and
+  omit lesser detail rather than exceeding the limit.
+- If the image is too degraded to describe reliably, say so briefly.
 
 Respond ONLY with valid JSON, no other text:
 {
   "alt_text": "...",
   "confidence": "high" | "medium" | "low",
-  "notes": "..." // optional: flag contradictions, degradation, uncertainty
+  "notes": ""
 }
+
+The "notes" field exists ONLY to flag an item for human review. Leave it as an
+empty string ("") unless one of the following is true:
+- the image is too degraded to describe reliably
+- the metadata clearly contradicts what is visible in the image
+- you are genuinely unsure whether your description is accurate
+
+Do NOT use "notes" to justify or explain the description, to restate the metadata,
+or to record your reasoning. Most items should have an empty "notes" field.
 
 Confidence guide:
 - high: image is clear and you can describe its content with certainty
-- medium: some uncertainty — image is partially degraded, content is ambiguous,
-  or metadata seems inconsistent with what is visible
-- low: significant uncertainty — image is too degraded to describe reliably,
-  or you are unsure whether the description is accurate
+- medium: some uncertainty — image is partially degraded or content is ambiguous
+- low: significant uncertainty — image is too degraded to describe reliably, or you
+  are unsure whether the description is accurate
 """
 
 book_item_prompt = """
